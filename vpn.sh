@@ -108,6 +108,9 @@ then
 fi
 
 echo "Installing XL2TPD..."
+
+rpm -Uvh http://mirrors.ustc.edu.cn/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
 yum install xl2tpd -y > /dev/null
 
 if [ "$?" = "1" ]
@@ -324,6 +327,7 @@ exit 0
 EOF
 
 echo "Applying changes..."
+
 
 if [ ! -f /etc/ipsec.d/cert8.db ] ; then
    echo > /var/tmp/libreswan-nss-pwd
