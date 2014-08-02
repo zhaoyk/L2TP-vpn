@@ -10,8 +10,8 @@ printf "
 #                                                  #
 # This is a l2tp vpn shell based Zed Lau           #
 #                                                  #
-# Author: Jedyu                                    #
-# Website: http://xlolo.com                        #
+# Author: chenwg                                    #
+# Website: http://www.chenwg.com                        #
 #                                                  #
 ####################################################
 "
@@ -24,11 +24,11 @@ if [ "$iprange" = "" ]; then
 	iprange="10.0.99"
 fi
 
-mypsk="xlolo.com"
+mypsk="chenwg.com"
 echo "Please input PSK:"
-read -p "(Default PSK: xlolo.com):" mypsk
+read -p "(Default PSK: chenwg.com):" mypsk
 if [ "$mypsk" = "" ]; then
-	mypsk="xlolo.com"
+	mypsk="chenwg.com"
 fi
 
 clear
@@ -72,38 +72,47 @@ make programs install
 rm -rf /etc/ipsec.conf
 touch /etc/ipsec.conf
 cat >>/etc/ipsec.conf<<EOF
+version 2.0
+
 config setup
     nat_traversal=yes
-    virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12
+    virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:!192.168.42.0/24
     oe=off
     protostack=netkey
     plutostderrlog=/var/log/ipsec.log
+    nhelpers=0
+    interfaces=%defaultroute
 
 conn L2TP-PSK-NAT
     rightsubnet=vhost:%priv
     also=L2TP-PSK-noNAT
 
 conn L2TP-PSK-noNAT
-    authby=secret
-    type=tunnel
-    esp=aes128-sha1
-    ike=aes128-sha-modp1024
-    pfs=no
+    connaddrfamily=ipv4
     auto=add
-    keyingtries=3
-    rekey=no
-    ikelifetime=8h
-    keylife=1h
-    left=$vpsip
+    left=$PUBLICIP
+    leftid=$PUBLICIP
+    leftsubnet=$PUBLICIP/32
     leftnexthop=%defaultroute
     leftprotoport=17/1701
-    right=%any
     rightprotoport=17/%any
+    right=%any
     rightsubnetwithin=0.0.0.0/0
+    forceencaps=yes
+    authby=secret
+    pfs=no
+    type=transport
+    auth=esp
+    ike=3des-sha1,aes-sha1
+    phase2alg=3des-sha1,aes-sha1
+    rekey=no
+    keyingtries=5
     dpddelay=30
     dpdtimeout=120
     dpdaction=clear
 EOF
+
+
 cat >>/etc/ipsec.secrets<<EOF
 $vpsip %any: PSK "$mypsk"
 EOF
@@ -118,6 +127,9 @@ done
 /etc/init.d/ipsec restart
 ipsec verify
 cd /ztmp/l2tp
+
+
+
 wget http://nchc.dl.sourceforge.net/project/rp-l2tp/rp-l2tp/0.4/rp-l2tp-0.4.tar.gz
 tar zxvf rp-l2tp-0.4.tar.gz
 cd rp-l2tp-0.4
@@ -136,22 +148,26 @@ rm -rf /etc/xl2tpd/xl2tpd.conf
 touch /etc/xl2tpd/xl2tpd.conf
 cat >>/etc/xl2tpd/xl2tpd.conf<<EOF
 [global]
+port = 1701
 listen-addr = $vpsip
 ipsec saref = yes
 [lns default]
-ip range = $iprange.2-$iprange.254
-local ip = $iprange.1
+ip range = 192.168.42.10-192.168.42.250
+local ip = 192.168.42.1
 refuse chap = yes
 refuse pap = yes
 require authentication = yes
 ppp debug = yes
+name = l2tpd
 pppoptfile = /etc/ppp/options.xl2tpd
 length bit = yes
+
 EOF
 rm -rf /etc/ppp/options.xl2tpd
 touch /etc/ppp/options.xl2tpd
 cat >>/etc/ppp/options.xl2tpd<<EOF
-require-mschap-v2
+ipcp-accept-local
+ipcp-accept-remote
 ms-dns 8.8.8.8
 ms-dns 8.8.4.4
 noccp
@@ -172,7 +188,7 @@ mru 1410
 nodefaultroute
 connect-delay 5000
 logfd 2
-logfile /var/log/l2tpd.log
+logfile /var/log/li2tpd.log
 EOF
 cat >>/etc/ppp/chap-secrets<<EOF
 lolo l2tpd 1216 *
@@ -201,8 +217,8 @@ printf "
 #                                                  #
 # This is a l2tp vpn shell based Zed Lau           #
 #                                                  #
-# Author: Jedyu                                    #
-# Website: http://xlolo.com                        #
+# Author: chenwg                                    #
+# Website: http://www.chenwg.com                        #
 #                                                  #
 ####################################################
 if there are no [FAILED] above, then you can
@@ -210,8 +226,8 @@ connect to your L2TP VPN Server with the default
 user/pass below:
 
 ServerIP:$vpsip
-username:hxxy2003
-password:123456
+username:test
+password:test123
 PSK:$mypsk
 
 "
