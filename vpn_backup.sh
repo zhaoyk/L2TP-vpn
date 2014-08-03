@@ -194,6 +194,7 @@ iptables --table nat --append POSTROUTING --jump MASQUERADE
 /usr/bin/zl2tpset
 /usr/local/sbin/xl2tpd
 EOF
+
 clear
 ipsec verify
 printf "
