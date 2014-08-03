@@ -9,5 +9,5 @@ L2TP-vpn
 
 2.chmod +x vpn_centos6.sh
 
-3. ./vpn_centos6.sh
+3../vpn_centos6.sh
 
