@@ -10,12 +10,12 @@ printf "
 #                                                  #
 # This is a l2tp vpn shell based Zed Lau           #
 #                                                  #
-# Author: chenwg                                    #
-# Website: http://www.chenwg.com                        #
+# Author: chenwg                                   #
+# Website: http://www.chenwg.com                   #
 #                                                  #
 ####################################################
 "
-vpsip=`hostname -i`
+vpsip="$SERVER_IP"
 
 iprange="10.0.99"
 echo "Please input IP-Range:"
@@ -175,7 +175,7 @@ logfd 2
 logfile /var/log/l2tpd.log
 EOF
 cat >>/etc/ppp/chap-secrets<<EOF
-lolo l2tpd 1216 *
+test l2tpd test123 *
 EOF
 touch /usr/bin/zl2tpset
 echo "#/bin/bash" >>/usr/bin/zl2tpset
@@ -202,8 +202,8 @@ printf "
 #                                                  #
 # This is a l2tp vpn shell based Zed Lau           #
 #                                                  #
-# Author: chenwg                                    #
-# Website: http://www.chenwg.com                        #
+# Author: chenwg                                   #
+# Website: http://www.chenwg.com                   #
 #                                                  #
 ####################################################
 if there are no [FAILED] above, then you can
